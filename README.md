@@ -1,7 +1,6 @@
-
 ## pg_tail  
 
-Watches last columns of a PostgreSQL table like in a "tail -f".
+Watches last lines of a PostgreSQL table like in a "tail -f".
 Inspired by [mysqltail](http://www.vanheusden.com/mysqltail/).
 
 ## Install
