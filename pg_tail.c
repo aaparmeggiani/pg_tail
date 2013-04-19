@@ -7,8 +7,9 @@
 #include <libpq-fe.h>
 
 #define VERSION   "0.1"
-#define INTERVAL  10
-#define LINES     5
+#define INTERVAL  10         /* default polling interval in seconds*/
+#define LINES     5          /* default number of lines in the first poll */
+#define SEPARATOR " | "      /* default column delimiter */
 
 #define MAX(n1, n2)   ((n1) > (n2) ? (n1) : (n2))
 
@@ -24,10 +25,10 @@ static void help(void) {
   printf("  -U, --username=NAME           connect as specified database user\n\n");
 
   printf("  -t, --table=TABLE             table to watch\n");
-  printf("  -c, --columns=uKEY,COL1,COLn  columns to watch, the first one is an unique key\n");
+  printf("  -c, --columns=KEY,COL1,COLn   columns to watch, the first one is an unique key\n");
   printf("  -i, --interval=SECONDS        database polling interval in seconds (default: %d)\n", INTERVAL);
   printf("  -s, --separator=CHAR          sets a column delimiter (an no column alignment) \n");
-  printf("  -n  NUM                       number of lines in the first polling (default: %d)\n", LINES);
+  printf("  -n  NUM                       number of lines in the first poll (default: %d)\n", LINES);
   printf("  -v, --version                 version info\n\n");
 }
 
@@ -48,14 +49,14 @@ int main(int argc, char **argv)
   const char  *op_table       = NULL;
   const char  *op_key         = NULL;
   const char  *op_columns     = NULL;
-  const char  *op_separator   = " | ";
+  const char  *op_separator   = SEPARATOR;
   int         op_interval     = INTERVAL;
   int         op_n            = LINES;
   int         op_align        = 1;
 
   char        *current_key    = NULL;
-  char        query[2048]     = {};
-  int         col_length[100] = {0};
+  char        query[2000]     = {};
+  int         col_length[500] = {};
   int         num_rows        = 0;
   int         num_fields      = 0;
   int         i,j,c;
@@ -68,7 +69,6 @@ int main(int argc, char **argv)
     {"port",      required_argument, NULL, 'p'},
     {"username",  required_argument, NULL, 'U'},
     {"table",     required_argument, NULL, 't'},
-    {"key",       required_argument, NULL, 'k'},
     {"columns",   required_argument, NULL, 'c'},
     {"separator", required_argument, NULL, 's'},
     {"interval",  required_argument, NULL, 'i'},
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
     exit_nicely(0);
   }
 
-  while ((c = getopt_long(argc, argv, "d:h:p:U:t:k:c:s:i:n:v", long_options, &optindex)) != -1) {
+  while ((c = getopt_long(argc, argv, "d:h:p:t:c:i:s:n:U:v", long_options, &optindex)) != -1) {
 
     switch (c) {
 
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 
     if(current_key)
       snprintf(query, sizeof(query),
-        "SELECT %s FROM %s WHERE %s > %s ORDER BY %s ASC",
+        "SELECT %s FROM %s WHERE %s > '%s' ORDER BY %s ASC",
         op_columns, op_table, op_key, current_key, op_key);
     else
       snprintf(query, sizeof(query),
@@ -191,8 +191,10 @@ int main(int argc, char **argv)
       printf("\n");
     }
 
-    if(num_rows > 0)
+    if(num_rows > 0) {
+      free(current_key);
       current_key = strdup(PQgetvalue(res, i-1, 0));
+    }
 
     sleep(op_interval);
   }
