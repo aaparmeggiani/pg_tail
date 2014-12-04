@@ -196,6 +196,7 @@ int main(int argc, char **argv)
       current_key = strdup(PQgetvalue(res, i-1, 0));
     }
 
+    PQclear(res);
     sleep(op_interval);
   }
 
