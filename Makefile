@@ -9,7 +9,7 @@ LDFLAGS=-lpq
 all: pg_tail
 
 pg_tail: pg_tail.c
-	$(CC) $(CFLAGS) $(INC) $(LIB) $(LDFLAGS) -o pg_tail pg_tail.c
+	$(CC) $(CFLAGS) $(INC) $(LIB) -o pg_tail pg_tail.c $(LDFLAGS)
 
 install: pg_tail
 	cp pg_tail $(INSTALL)
