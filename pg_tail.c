@@ -25,7 +25,7 @@ static void help(void) {
   printf("  -U, --username=NAME           connect as specified database user\n\n");
 
   printf("  -t, --table=TABLE             table to watch\n");
-  printf("  -c, --columns=KEY,COL1,COLn   columns to watch, the first one is an unique key\n");
+  printf("  -c, --columns=COL1..COLn      columns to watch, the first one must be an ordered primary key (sequence)\n");
   printf("  -i, --interval=SECONDS        database polling interval in seconds (default: %d)\n", INTERVAL);
   printf("  -s, --separator=CHAR          sets a column delimiter (an no column alignment) \n");
   printf("  -n  NUM                       number of lines in the first poll (default: %d)\n", LINES);
