@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <libpq-fe.h>
 
-#define VERSION   "0.2"
+#define VERSION   "0.3"
 #define INTERVAL  10         /* default polling interval in seconds*/
 #define LINES     5          /* default number of lines in the first poll */
 #define SEPARATOR " | "      /* default column delimiter */
