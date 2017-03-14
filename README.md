@@ -40,5 +40,5 @@ id | login  | email              |
 ```
 
 ## License
-[The MIT License (MIT)](http://www.opensource.org/licenses/MIT)
+MIT
 
