@@ -39,6 +39,12 @@ id | login  | email              |
 3  | teller | teller@example.com |
 ```
 
+## Dockerized
+```
+  docker run -it --init --rm aaparmeggiani/pg_tail -h host -d database -U user -t table -c key
+```
+(_don't forget **--init** or you'll find yourself  trapped without ctrl-c_  =)
+
 ## License
 [The MIT License (MIT)](http://www.opensource.org/licenses/MIT)
 
