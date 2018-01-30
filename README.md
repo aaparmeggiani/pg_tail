@@ -46,5 +46,5 @@ id | login  | email              |
 (_don't forget **--init** or you'll find yourself  trapped without ctrl-c_  =)
 
 ## License
-[The MIT License (MIT)](http://www.opensource.org/licenses/MIT)
+MIT
 
