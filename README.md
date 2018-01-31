@@ -39,9 +39,12 @@ id | login  | email              |
 3  | teller | teller@example.com |
 ```
 
-## Dockerized
+## Dockerized 
+[![Docker Build Status](https://img.shields.io/docker/build/aaparmeggiani/pg_tail.svg)]()
+[![Image Info](https://images.microbadger.com/badges/image/aaparmeggiani/pg_tail.svg)]()
+
 ```
-  docker run -it --init --rm aaparmeggiani/pg_tail -h host -d database -U user -t table -c key
+docker run -it --init --rm aaparmeggiani/pg_tail -h host -d database -U user -t table -c key
 ```
 (_don't forget **--init** or you'll find yourself  trapped without ctrl-c_  =)
 
