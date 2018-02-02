@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <libpq-fe.h>
 
-#define VERSION   "0.3"
+#define VERSION   "0.4"
 #define INTERVAL  10         /* default polling interval in seconds*/
 #define LINES     5          /* default number of lines in the first poll */
 #define SEPARATOR " | "      /* default column delimiter */
@@ -178,7 +178,7 @@ int main(int argc, char **argv)
       }
 
     /* header if 1st lap */
-    if(!current_key) {
+    if(!current_key && num_rows > 0) {
       for(i = 0; i < num_fields; i++)
         printf("%-*s%s", col_length[i], PQfname(res, i), op_separator);
       printf("\n");
