@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <libpq-fe.h>
 
-#define VERSION   "0.4"
+#define VERSION   "0.5"
 #define INTERVAL  10         /* default polling interval in seconds*/
 #define LINES     5          /* default number of lines in the first poll */
 #define SEPARATOR " | "      /* default column delimiter */
@@ -182,6 +182,7 @@ int main(int argc, char **argv)
       for(i = 0; i < num_fields; i++)
         printf("%-*s%s", col_length[i], PQfname(res, i), op_separator);
       printf("\n");
+      fflush(stdout);
     }
 
     /* rows */
@@ -189,6 +190,7 @@ int main(int argc, char **argv)
       for (j = 0; j < num_fields; j++)
         printf("%-*s%s", (op_align * col_length[j]), PQgetvalue(res, i, j), op_separator);
       printf("\n");
+      fflush(stdout);
     }
 
     if(num_rows > 0) {
