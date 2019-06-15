@@ -20,6 +20,8 @@ Options:
     -h, --host=HOSTNAME         database server host or socket directory
     -p, --port=PORT             database server port number
     -U, --username=NAME         connect as specified database user
+    -W, --password              prompts for the user password
+
 
     -t, --table=TABLE           table to watch
     -c, --columns=COL1..COLn    columns to watch, the first one must be an ordered primary key (sequence)
