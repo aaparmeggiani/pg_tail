@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <libpq-fe.h>
 
-#define VERSION   "0.5"
+#define VERSION   "0.6"
 #define INTERVAL  10         /* default polling interval in seconds*/
 #define LINES     5          /* default number of lines in the first poll */
 #define SEPARATOR " | "      /* default column delimiter */
@@ -22,7 +22,8 @@ static void help(void) {
   printf("  -d, --dbname=DBNAME           database to connect to\n");
   printf("  -h, --host=HOSTNAME           database server host or socket directory\n");
   printf("  -p, --port=PORT               database server port number\n");
-  printf("  -U, --username=NAME           connect as specified database user\n\n");
+  printf("  -U, --username=NAME           connect as specified database user\n");
+  printf("  -W, --password                prompts for the user password\n\n");
 
   printf("  -t, --table=TABLE             table to watch\n");
   printf("  -c, --columns=COL1..COLn      columns to watch, the first one must be an ordered primary key (sequence)\n");
@@ -56,6 +57,7 @@ int main(int argc, char **argv)
 
   char        *current_key    = NULL;
   char        query[2000]     = {};
+  char        *password       = NULL;
   int         col_length[500] = {};
   int         num_rows        = 0;
   int         num_fields      = 0;
@@ -68,6 +70,7 @@ int main(int argc, char **argv)
     {"host",      required_argument, NULL, 'h'},
     {"port",      required_argument, NULL, 'p'},
     {"username",  required_argument, NULL, 'U'},
+    {"password",  no_argument,       NULL, 'W'},
     {"table",     required_argument, NULL, 't'},
     {"columns",   required_argument, NULL, 'c'},
     {"separator", required_argument, NULL, 's'},
@@ -85,7 +88,7 @@ int main(int argc, char **argv)
     exit_nicely(0);
   }
 
-  while ((c = getopt_long(argc, argv, "d:h:p:t:c:i:s:n:U:v", long_options, &optindex)) != -1) {
+  while ((c = getopt_long(argc, argv, "d:h:p:t:c:i:s:n:U:Wv", long_options, &optindex)) != -1) {
 
     switch (c) {
 
@@ -126,6 +129,10 @@ int main(int argc, char **argv)
       case 'U':
         op_username = strdup(optarg);
         break;
+      
+      case 'W':
+        password = getpass("Password: ");
+        break;
 
       case 'v':
         printf("pg_tail v%s\n", VERSION);
@@ -143,7 +150,8 @@ int main(int argc, char **argv)
     exit_nicely(0);
   }
 
-  conn = PQsetdbLogin(op_pghost, op_pgport, NULL, NULL, op_dbname, op_username, NULL);
+  conn = PQsetdbLogin(op_pghost, op_pgport, NULL, NULL, op_dbname, op_username, password);
+  memset(password,0,strlen(password)); free(password);
   if (PQstatus(conn) != CONNECTION_OK) {
     fprintf(stderr, "Connection to database failed.\n%s\n", PQerrorMessage(conn));
     exit_nicely(conn);
