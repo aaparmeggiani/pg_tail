@@ -8,13 +8,13 @@ LIB=-L$(lib)
 CFLAGS=-Wall -O2
 LDFLAGS=-lpq
 
+all: pg_tail
+
 clean:
 	rm -f pg_tail
 
 pg_tail: pg_tail.c
 	$(CC) $(CFLAGS) $(INC) $(LIB) -o pg_tail pg_tail.c $(LDFLAGS)
-
-all: pg_tail
 
 install: pg_tail
 	cp pg_tail $(INSTALL)
