@@ -1,3 +1,5 @@
+SHELL=/bin/sh
+
 pgc := $(shell which pg_config)
 inc := $(shell $(pgc) --includedir)
 lib := $(shell $(pgc) --libdir)
