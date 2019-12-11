@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <libpq-fe.h>
 
-#define VERSION   "0.6"
+#define VERSION   "0.7"
 #define INTERVAL  10         /* default polling interval in seconds*/
 #define LINES     5          /* default number of lines in the first poll */
 #define SEPARATOR " | "      /* default column delimiter */
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
         break;
 
       case 'v':
-        printf("pg_tail v%s\n", VERSION);
+        printf("%s\n", VERSION);
         exit_nicely(0);
         break;
 
