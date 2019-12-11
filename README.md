@@ -1,9 +1,16 @@
 ## pg_tail
 
-Watches last lines of a PostgreSQL table like in a "tail -f".
-Inspired by [mysqltail](http://www.vanheusden.com/mysqltail/).
+Watches last lines of a PostgreSQL table like in a "tail -f".  
+( inspired by [mysqltail](http://www.vanheusden.com/mysqltail/) )
 
 ## Install
+
+#### macOS
+```console
+brew install aaparmeggiani/tap/pg_tail
+```
+
+#### generic Unix
 PostgreSQL is needed and make sure yours have pg_config and libpq.
 ```console
 git clone https://github.com/aaparmeggiani/pg_tail.git
@@ -11,6 +18,7 @@ cd pg_tail
 make
 make install
 ```
+
 ## Usage
 ```console
 % pg_tail [OPTIONS] -t TABLE -c uKEY[,COL1,..,COLn]
