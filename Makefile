@@ -22,5 +22,8 @@ install: pg_tail
 uninstall:
 	rm $(INSTALL)/pg_tail
 
+homebrew:
+	cp pg_tail $(PREFIX)
+
 
 
