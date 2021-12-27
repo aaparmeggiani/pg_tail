@@ -36,7 +36,16 @@ Options:
     -i, --interval=SECONDS      database polling interval in seconds (default: 10)
     -s, --separator=CHAR        sets a column delimiter (an no column alignment)
     -n  NUM                     number of lines in the first polling (default: 5)
+    -j, --json                  output as json    
     -v, --version               version info
+```
+
+Options can also be passed through the following `PG` / `PGTAIL` env variables:
+
+```
+PGDATABASE, PGHOST, PGPORT, PGUSER
+
+PGTAILTABLE, PGTAILKEY, PGTAILCOLUMNS, PGTAILSEPARATOR, PGTAILINTERVAL, PGTAILLINES, PGTAILALIGN, PGTAILJSON
 ```
 
 ## Example
@@ -50,13 +59,11 @@ id | login  | email              |
 ```
 
 ## Dockerized 
-[![Docker Build Status](https://img.shields.io/docker/build/aaparmeggiani/pg_tail.svg)]()
-[![Image Info](https://images.microbadger.com/badges/image/aaparmeggiani/pg_tail.svg)]()
 
 ```
-docker run -it --init --rm aaparmeggiani/pg_tail -h host -d database -U user -t table -c key
+docker run -it --init --rm aaparmeggiani/pg_tail --help
 ```
-(_don't forget **--init** or you'll find yourself  trapped without ctrl-c_  =)
+(_don't forget **--init** or you might find yourself trapped without ctrl-c_  =)
 
 ## License
 MIT
