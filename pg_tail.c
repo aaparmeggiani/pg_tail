@@ -30,6 +30,7 @@ static void help(void) {
   printf("  -i, --interval=SECONDS        database polling interval in seconds (default: %d)\n", INTERVAL);
   printf("  -s, --separator=CHAR          sets a column delimiter (an no column alignment) \n");
   printf("  -n  NUM                       number of lines in the first poll (default: %d)\n", LINES);
+  printf("  -j, --json                    output as json\n");
   printf("  -v, --version                 version info\n\n");
 }
 
@@ -53,6 +54,7 @@ int main(int argc, char **argv)
   int         op_interval     = getenv("PGTAILINTERVAL") ? atoi(getenv("PGTAILINTERVAL")) : INTERVAL;
   int         op_n            = getenv("PGTAILLINES") ? atoi(getenv("PGTAILLINES")) : LINES;
   int         op_align        = getenv("PGTAILALIGN") ? atoi(getenv("PGTAILALIGN")) : 1;
+  int         op_json         = getenv("PGTAILJSON") ? atoi(getenv("PGTAILJSON")) : 0;
 
   char        *current_key    = NULL;
   char        query[2000]     = {};
@@ -62,7 +64,6 @@ int main(int argc, char **argv)
   int         num_fields      = 0;
   int         i,j,c;
   int         optindex;
-
 
   static struct option long_options[] = {
     {"dbname",    required_argument, NULL, 'd'},
@@ -74,6 +75,7 @@ int main(int argc, char **argv)
     {"columns",   required_argument, NULL, 'c'},
     {"separator", required_argument, NULL, 's'},
     {"interval",  required_argument, NULL, 'i'},
+    {"json",      no_argument,       NULL, 'j'},
     {"version",   no_argument,       NULL, 'v'},
     {NULL, 0, NULL, 0}
   };
@@ -87,7 +89,7 @@ int main(int argc, char **argv)
     exit_nicely(0);
   }
 
-  while ((c = getopt_long(argc, argv, "d:h:p:t:c:i:s:n:U:Wv", long_options, &optindex)) != -1) {
+  while ((c = getopt_long(argc, argv, "d:h:p:t:c:i:s:n:U:Wjv", long_options, &optindex)) != -1) {
 
     switch (c) {
 
@@ -133,6 +135,10 @@ int main(int argc, char **argv)
         password = getpass("Password: ");
         break;
 
+      case 'j':
+        op_json = 1;
+        break;
+
       case 'v':
         printf("%s\n", VERSION);
         exit_nicely(0);
@@ -148,7 +154,6 @@ int main(int argc, char **argv)
     fprintf(stderr, "Missing table or key (column).\n");
     exit_nicely(0);
   }
-
   conn = PQsetdbLogin(op_pghost, op_pgport, NULL, NULL, op_dbname, op_username, password);
   if(password){ memset_s(password, strlen(password), 0,  strlen(password)); }
 
@@ -161,12 +166,12 @@ int main(int argc, char **argv)
 
     if(current_key)
       snprintf(query, sizeof(query),
-        "SELECT %s FROM %s WHERE %s > '%s' ORDER BY %s ASC",
-        op_columns, op_table, op_key, current_key, op_key);
+        "SELECT %s,row_to_json(row(%s)) FROM %s WHERE %s > '%s' ORDER BY %s ASC",
+        op_columns, op_columns, op_table, op_key, current_key, op_key);
     else
       snprintf(query, sizeof(query),
-       "SELECT * FROM (SELECT %s FROM %s ORDER BY %s DESC LIMIT %d) AS tmp ORDER BY %s ASC",
-        op_columns, op_table, op_key, op_n, op_key);
+       "SELECT * FROM (SELECT %s,row_to_json(row(%s)) FROM %s ORDER BY %s DESC LIMIT %d) AS tmp ORDER BY %s ASC",
+        op_columns, op_columns, op_table, op_key, op_n, op_key);
 
     res = PQexec(conn, query);
     if(PQresultStatus(res) != PGRES_TUPLES_OK) {
@@ -186,8 +191,8 @@ int main(int argc, char **argv)
       }
 
     /* header if 1st lap */
-    if(!current_key && num_rows > 0) {
-      for(i = 0; i < num_fields; i++)
+    if(!current_key && num_rows > 0 && !op_json) {
+      for(i = 0; i < num_fields-1; i++)
         printf("%-*s%s", col_length[i], PQfname(res, i), op_separator);
       printf("\n");
       fflush(stdout);
@@ -195,8 +200,13 @@ int main(int argc, char **argv)
 
     /* rows */
     for (i = 0; i < num_rows; i++) {
-      for (j = 0; j < num_fields; j++)
-        printf("%-*s%s", (op_align * col_length[j]), PQgetvalue(res, i, j), op_separator);
+      if(op_json){
+        printf("%s", PQgetvalue(res, i, num_fields-1));
+      }
+      else{
+        for (j = 0; j < num_fields-1; j++)
+          printf("%-*s%s", (op_align * col_length[j]), PQgetvalue(res, i, j), op_separator);
+      }
       printf("\n");
       fflush(stdout);
     }
