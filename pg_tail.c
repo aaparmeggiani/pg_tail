@@ -42,22 +42,21 @@ int main(int argc, char **argv)
 {
   PGconn      *conn;
   PGresult    *res;
-
-  const char  *op_dbname      = NULL;
-  const char  *op_pghost      = NULL;
-  const char  *op_pgport      = NULL;
-  const char  *op_username    = NULL;
-  const char  *op_table       = NULL;
-  const char  *op_key         = NULL;
-  const char  *op_columns     = NULL;
-  const char  *op_separator   = SEPARATOR;
-  int         op_interval     = INTERVAL;
-  int         op_n            = LINES;
-  int         op_align        = 1;
+  const char  *op_dbname      = getenv("PGDATABASE");
+  const char  *op_pghost      = getenv("PGHOST");
+  const char  *op_pgport      = getenv("PGPORT");
+  const char  *op_username    = getenv("PGUSER");
+  const char  *op_table       = getenv("PGTAILTABLE");
+  const char  *op_key         = getenv("PGTAILKEY");
+  const char  *op_columns     = getenv("PGTAILCOLUMNS");
+  const char  *op_separator   = getenv("PGTAILSEPARATOR") ? getenv("PGTAILSEPARATOR") : SEPARATOR;
+  int         op_interval     = getenv("PGTAILINTERVAL") ? atoi(getenv("PGTAILINTERVAL")) : INTERVAL;
+  int         op_n            = getenv("PGTAILLINES") ? atoi(getenv("PGTAILLINES")) : LINES;
+  int         op_align        = getenv("PGTAILALIGN") ? atoi(getenv("PGTAILALIGN")) : 1;
 
   char        *current_key    = NULL;
   char        query[2000]     = {};
-  char        *password       = NULL;
+  char        *password       = getenv("PGPASSWORD");
   int         col_length[500] = {};
   int         num_rows        = 0;
   int         num_fields      = 0;
@@ -151,7 +150,8 @@ int main(int argc, char **argv)
   }
 
   conn = PQsetdbLogin(op_pghost, op_pgport, NULL, NULL, op_dbname, op_username, password);
-  memset(password,0,strlen(password)); free(password);
+  if(password){ memset_s(password, strlen(password), 0,  strlen(password)); }
+
   if (PQstatus(conn) != CONNECTION_OK) {
     fprintf(stderr, "Connection to database failed.\n%s\n", PQerrorMessage(conn));
     exit_nicely(conn);
