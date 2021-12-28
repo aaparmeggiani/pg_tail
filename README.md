@@ -59,7 +59,8 @@ id | login  | email              |
 ```
 
 ## Dockerized 
-
+[![Docker Automated Status](https://img.shields.io/docker/cloud/automated/aaparmeggiani/pg_tail.svg)]()
+[![Docker Build Status](https://img.shields.io/docker/cloud/build/aaparmeggiani/pg_tail.svg)]()
 ```
 docker run -it --init --rm aaparmeggiani/pg_tail --help
 ```
