@@ -155,7 +155,7 @@ int main(int argc, char **argv)
     exit_nicely(0);
   }
   conn = PQsetdbLogin(op_pghost, op_pgport, NULL, NULL, op_dbname, op_username, password);
-  if(password){ memset_s(password, strlen(password), 0,  strlen(password)); }
+  if(password){ memset(password, 0, strlen(password)); }
 
   if (PQstatus(conn) != CONNECTION_OK) {
     fprintf(stderr, "Connection to database failed.\n%s\n", PQerrorMessage(conn));
